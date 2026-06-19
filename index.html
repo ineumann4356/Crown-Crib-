@@ -296,7 +296,7 @@ footer{text-align:center;color:#d9c17b;padding:16px;font-size:13px}
 
     <section class="panel king-panel">
       <h2>Wild Kings Reminder</h2>
-      <p>Kings are wild during hand and crib scoring. A King may count as any rank from Ace through King, whichever creates the best score, but it never changes suit.</p>
+      <p>Kings are wild during hand and crib scoring. A King may count as any rank from Ace through King, whichever creates the best score, but it never changes suit. 5 of a kind scores 20 points normally and 25 points during Perfect Pairs.</p>
       <p>During pegging, Kings behave like normal Kings and count as 10. A King used as a Jack may score nobs if its original suit matches the Starter Card.</p>
     </section>
 
@@ -314,7 +314,7 @@ footer{text-align:center;color:#d9c17b;padding:16px;font-size:13px}
 const events = {
   1:{name:"Tempo Surge", type:"Scoring Law", text:"Runs upgraded: 3=4 pts, 4=6 pts, 5=8 pts, 6=10 pts, 7=12 pts. Applies to pegging, hands, and crib."},
   2:{name:"Golden Fifteens", type:"Scoring Law", text:"All 15s score 3 points. Applies to pegging, hands, and crib."},
-  3:{name:"Perfect Pairs", type:"Scoring Law", text:"Pair=3, 3 of a Kind=9, 4 of a Kind=16, 5 of a Kind with Kings=25. Applies to pegging, hands, and crib."},
+  3:{name:"Perfect Pairs", type:"Scoring Law", text:"Pair=3, 3 of a Kind=9, 4 of a Kind=16, 5 of a Kind=25. Applies to pegging, hands, and crib."},
   4:{name:"Regal Rotation", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: pass 1 card of your choice to the player on your left."},
   5:{name:"Kingdom Tax", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: place 2 cards into a shared pool. Dealer shuffles those cards and gives 2 back to each player."},
   6:{name:"Public Shame", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: player on your left reveals 1 of your cards, discards it to the bottom of the deck, and you replace it from the top."}
@@ -420,7 +420,7 @@ function add(points, label){
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(Number(b.dataset.add)));
 
 const helperBase = {
-  "15":2, "31":2, "go":1, "pair":2, "trips":6, "quads":12, "run3":3, "run4":4, "run5":5, "run6":6, "run7":7, "fivekind":0, "nobs":1, "heels":2
+  "15":2, "31":2, "go":1, "pair":2, "trips":6, "quads":12, "run3":3, "run4":4, "run5":5, "run6":6, "run7":7, "fivekind":20, "nobs":1, "heels":2
 };
 document.querySelectorAll("[data-helper]").forEach(b=>{
   b.onclick=()=>{
@@ -435,7 +435,6 @@ document.querySelectorAll("[data-helper]").forEach(b=>{
     if(state.currentEvent===3 && key==="trips") pts=9;
     if(state.currentEvent===3 && key==="quads") pts=16;
     if(state.currentEvent===3 && key==="fivekind") pts=25;
-    if(key==="fivekind" && state.currentEvent!==3){ alert("5 of a Kind with Kings scores 25 only during Perfect Pairs."); return; }
     add(pts, label);
   };
 });
