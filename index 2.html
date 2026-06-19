@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0b120d"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Crown Crib"/>
+  <title>Crown Crib Scorekeeper v3</title>
+  <style>
+:root{
+  --bg:#070907;
+  --wood:#1b1009;
+  --green:#0f2417;
+  --green2:#183d24;
+  --gold:#d6a13d;
+  --gold2:#ffe3a0;
+  --paper:#f7ead0;
+  --paper2:#e6cf9f;
+  --ink:#20170b;
+  --red:#9f2c2c;
+  --blue:#2f6fd1;
+  --yellow:#b78928;
+  --leaf:#2d7a3d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Georgia, "Times New Roman", serif;
+  color:var(--paper);
+  background:
+    radial-gradient(circle at top, rgba(214,161,61,.18), transparent 28%),
+    linear-gradient(180deg,#0c130e,#030403 75%);
+}
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;
+  border-bottom:2px solid var(--gold);
+  background:linear-gradient(180deg,#162018,#070807);
+  position:sticky;top:0;z-index:5;
+}
+.seal{
+  min-width:54px;height:54px;border:2px solid var(--gold);
+  border-radius:50%;display:grid;place-items:center;
+  color:var(--gold2);font-size:34px;box-shadow:0 0 18px rgba(214,161,61,.35);
+}
+h1{margin:0;color:var(--gold2);font-size:36px;letter-spacing:2px;text-transform:uppercase}
+.topbar p{margin:0;color:#dbc891;font-size:14px}
+main{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:14px}
+.panel{
+  background:linear-gradient(180deg,var(--paper),var(--paper2));
+  color:var(--ink);
+  border:3px solid var(--gold);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+}
+.panel h2{margin:0 0 10px;color:#173b1f;text-transform:uppercase;letter-spacing:1px}
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-weight:bold}
+select,input{
+  width:100%;margin-top:5px;padding:11px;
+  border:2px solid #a87425;border-radius:10px;background:#fffaf0;font-size:16px;
+}
+.name-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+button{
+  border:2px solid var(--gold);
+  border-radius:12px;
+  background:linear-gradient(180deg,#183c22,#0c1d11);
+  color:#fff1bb;
+  font-weight:bold;
+  padding:11px 13px;
+  font-size:16px;
+  cursor:pointer;
+}
+button:active{transform:scale(.98)}
+.primary{width:100%;font-size:18px}
+.hidden{display:none}
+.game-head,.event-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.subline{margin:0;color:#5e4b2b}
+.pill{background:#173b1f;color:#fff1bb;border:2px solid var(--gold);border-radius:999px;padding:8px 14px;font-weight:bold}
+.score-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:12px 0}
+.score-card{
+  background:#fffaf0;border:2px solid #b8892b;border-radius:14px;padding:12px;
+}
+.score-card.selected{outline:4px solid var(--gold);box-shadow:0 0 0 4px rgba(214,161,61,.22)}
+.score-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.house-dot{width:24px;height:24px;border-radius:50%;border:2px solid #2a1d0d}
+.name{font-weight:bold;font-size:20px}
+.dealer{font-size:12px;background:#173b1f;color:#fff1bb;border-radius:999px;padding:4px 8px}
+.score{font-size:52px;line-height:1;font-weight:bold;margin:10px 0;color:#162718}
+.progress{height:14px;border-radius:999px;background:#d4bd83;overflow:hidden;border:1px solid #9d7428}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#183d24,#d6a13d)}
+.victory{font-weight:bold;color:#8b1f1f;margin-top:8px}
+.quick-add{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.quick-add button{font-size:18px}
+.calculator{margin-top:12px;border:2px solid #c69739;border-radius:12px;background:#fff7e4;padding:10px}
+summary{font-weight:bold;color:#173b1f;cursor:pointer}
+.helper-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
+.helper-note{font-size:13px;color:#634d28;margin-bottom:0}
+.custom{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.event-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}
+.event{
+  text-align:left;background:#fffaf0;color:#20170b;border:2px solid #b8892b;border-radius:12px;padding:10px;min-height:88px;
+}
+.event.selected{outline:4px solid var(--gold)}
+.event strong{display:block;color:#173b1f;margin-bottom:5px}
+.current-event{margin-top:10px;background:#173b1f;color:#fff1bb;border-radius:12px;padding:12px;border:2px solid var(--gold)}
+.current-event b{display:block;font-size:20px;margin-bottom:5px}
+.crib-roll{margin-top:10px;background:#fff7e4;border:2px solid #c69739;border-radius:12px;padding:10px}
+.crib-roll h3{margin:0 0 6px;color:#173b1f}
+.crib-roll p{margin:5px 0}
+.round-flow ol{margin:0;padding-left:24px;columns:2}
+.round-flow li{margin:6px 0}
+.history-panel ol{max-height:190px;overflow:auto;margin:0;padding-left:22px}
+.history-panel li{margin:6px 0}
+footer{text-align:center;color:#d9c17b;padding:16px;font-size:13px}
+@media(max-width:740px){
+  h1{font-size:28px}
+  .setup-grid{grid-template-columns:1fr}
+  .quick-add{grid-template-columns:repeat(3,1fr)}
+  .round-flow ol{columns:1}
+  .actions{grid-template-columns:1fr}
+}
+
+/* v3 official flow styling */
+.event-panel .event-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.event.scoring-law{border-color:#2f6fd1;background:linear-gradient(180deg,#fffaf0,#e9d49f)}
+.event.royal-decree{border-color:#9f2c2c;background:linear-gradient(180deg,#fff3df,#e1bd8b)}
+.event .type-label{display:block;margin-top:5px;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:#173b1f}
+.crown-cut,.crib-rule{
+  margin-top:10px;
+  border:2px solid #b8892b;
+  border-radius:14px;
+  padding:10px;
+  background:#fffaf0;
+}
+.crown-cut h3,.crib-rule h3{margin:0 0 6px;color:#173b1f;text-transform:uppercase}
+.round-flow ul{margin:6px 0 0 20px;padding:0}
+.flow-mantra{
+  margin:12px 0 0;
+  background:#173b1f;
+  color:#fff1bb;
+  border:2px solid var(--gold);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+.king-panel p{font-size:16px;line-height:1.4}
+.score-card .dealer{background:#173b1f;color:#fff1bb;border:1px solid var(--gold);border-radius:999px;padding:3px 8px}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="seal">♛</div>
+    <div>
+      <h1>Crown Crib</h1>
+      <p>Companion Scorekeeper • Official Flow v3</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel setup" id="setupPanel">
+      <h2>Set Up Game</h2>
+      <div class="setup-grid">
+        <label>Mode
+          <select id="mode">
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4">4 Players</option>
+            <option value="team">Team 2v2</option>
+          </select>
+        </label>
+        <label>Goal
+          <select id="goal">
+            <option value="121">121 Standard</option>
+            <option value="242">242 Epic / Team</option>
+          </select>
+        </label>
+      </div>
+      <div id="nameInputs" class="name-inputs"></div>
+      <button class="primary" id="startBtn">Start / Update Game</button>
+    </section>
+
+    <section class="panel game hidden" id="gamePanel">
+      <div class="game-head">
+        <div>
+          <h2>Scoreboard</h2>
+          <p class="subline">Tap a player, then add points.</p>
+        </div>
+        <div class="pill">Goal <span id="goalView">121</span></div>
+      </div>
+
+      <div id="scoreCards" class="score-cards"></div>
+
+      <div class="quick-add">
+        <button data-add="1">+1</button>
+        <button data-add="2">+2</button>
+        <button data-add="3">+3</button>
+        <button data-add="4">+4</button>
+        <button data-add="5">+5</button>
+        <button data-add="6">+6</button>
+        <button data-add="7">+7</button>
+        <button data-add="8">+8</button>
+        <button data-add="9">+9</button>
+        <button data-add="10">+10</button>
+        <button data-add="12">+12</button>
+        <button data-add="16">+16</button>
+        <button data-add="25">+25</button>
+      </div>
+
+      <details class="calculator">
+        <summary>Scoring Helper</summary>
+        <div class="helper-grid">
+          <button data-helper="15">Fifteen</button>
+          <button data-helper="31">Thirty-One</button>
+          <button data-helper="go">Go</button>
+          <button data-helper="pair">Pair</button>
+          <button data-helper="trips">3 of a Kind</button>
+          <button data-helper="quads">4 of a Kind</button>
+          <button data-helper="run3">Run of 3</button>
+          <button data-helper="run4">Run of 4</button>
+          <button data-helper="run5">Run of 5</button>
+          <button data-helper="run6">Run of 6</button>
+          <button data-helper="run7">Run of 7</button>
+          <button data-helper="fivekind">5 of a Kind</button>
+          <button data-helper="nobs">Nobs</button>
+          <button data-helper="heels">His Heels</button>
+        </div>
+        <p class="helper-note" id="helperNote">Helper uses the selected Event Die where applicable.</p>
+      </details>
+
+      <div class="custom">
+        <input id="customAmount" type="number" placeholder="Custom +/- points"/>
+        <button id="customBtn">Apply</button>
+      </div>
+
+      <div class="actions">
+        <button id="undoBtn">Undo</button>
+        <button id="nextDealerBtn">Next Dealer</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </section>
+
+    <section class="panel event-panel">
+      <div class="event-head">
+        <h2>Event Die</h2>
+        <button id="clearEventBtn">Clear</button>
+      </div>
+      <div class="event-grid" id="eventGrid"></div>
+      <div class="current-event" id="currentEvent">
+        <b>No Event Selected</b>
+        <span>Tap the event rolled this round.</span>
+      </div>
+      <div class="crown-cut">
+        <h3>Crown Cut</h3>
+        <p><b>Triggered by Royal Decrees 4–6.</b></p>
+        <p>After crib discard, reveal 2 non-King cards. The dealer chooses 1 as the Starter Card. Replace any revealed King until 2 non-King choices are available.</p>
+      </div>
+      <div class="crib-rule">
+        <h3>Crib Scoring</h3>
+        <p><b>Events 1–3:</b> crib uses the same Scoring Law.</p>
+        <p><b>Events 4–6:</b> crib scores normally.</p>
+      </div>
+    </section>
+
+    <section class="panel round-flow">
+      <h2>Official Round Order</h2>
+      <ol>
+        <li>Deal 3 private cards to each player</li>
+        <li>Set the Knight’s Table based on player count</li>
+        <li>Roll Event Die</li>
+        <li>Draft from the Knight’s Table</li>
+        <li>Resolve Royal Decree effects if the Event Die was 4–6</li>
+        <li>Discard 1 card to the crib</li>
+        <li>Reveal the Starter Card
+          <ul>
+            <li><b>Event 1–3:</b> normal starter cut</li>
+            <li><b>Event 4–6:</b> Crown Cut</li>
+          </ul>
+        </li>
+        <li>Pegging</li>
+        <li>Score hands</li>
+        <li>Dealer scores crib
+          <ul>
+            <li><b>Event 1–3:</b> crib uses the same Scoring Law</li>
+            <li><b>Event 4–6:</b> crib scores normally</li>
+          </ul>
+        </li>
+        <li>Rotate dealer clockwise</li>
+      </ol>
+      <p class="flow-mantra"><b>Deal. Table. Roll. Draft. Decree. Discard. Cut. Peg. Score.</b></p>
+    </section>
+
+    <section class="panel king-panel">
+      <h2>Wild Kings Reminder</h2>
+      <p>Kings are wild during hand and crib scoring. A King may count as any rank from Ace through King, whichever creates the best score, but it never changes suit.</p>
+      <p>During pegging, Kings behave like normal Kings and count as 10. A King used as a Jack may score nobs if its original suit matches the Starter Card.</p>
+    </section>
+
+    <section class="panel history-panel">
+      <h2>History</h2>
+      <ol id="history"></ol>
+    </section>
+  </main>
+
+  <footer>
+    Add to iPhone Home Screen: Share button → Add to Home Screen.
+  </footer>
+
+  <script>
+const events = {
+  1:{name:"Tempo Surge", text:"Runs upgraded: 3=4 pts, 4=6 pts, 5=8 pts, +2 after 5."},
+  2:{name:"Golden Fifteens", text:"All 15s score 3 points."},
+  3:{name:"Crowned Pairs", text:"Pair=3, 3 of a Kind=9, 4 of a Kind=16, 5 of a Kind=25."},
+  4:{name:"Royal Rotation", text:"After Starter reveal: pass 1 card of your choice left."},
+  5:{name:"Kingdom Tax", text:"After Starter reveal: 2 cards to shared pool, dealer shuffles, give 2 back."},
+  6:{name:"Public Shame", text:"After Starter reveal: player on left reveals 1 card, discard bottom, replace from top."}
+};
+const colorMap = ["#9f2c2c","#2c5f9f","#2d7a3d","#b78928"];
+const defaultNames = ["Red Crown","Blue Crown","Green Crown","Gold Crown"];
+let state = {players:[], goal:121, selected:0, dealer:0, currentEvent:null, history:[]};
+
+const $ = id => document.getElementById(id);
+const modeEl = $("mode"), goalEl = $("goal"), nameInputs = $("nameInputs");
+
+function countForMode(mode){ return mode === "team" ? 2 : Number(mode); }
+function renderNameInputs(){
+  const count = countForMode(modeEl.value);
+  nameInputs.innerHTML = "";
+  for(let i=0;i<count;i++){
+    const lab = document.createElement("label");
+    lab.textContent = modeEl.value === "team" ? (i===0 ? "Team 1" : "Team 2") : `Player ${i+1}`;
+    const inp = document.createElement("input");
+    inp.id = `name${i}`;
+    inp.value = modeEl.value === "team" ? (i===0 ? "Team Crown" : "Team Shield") : defaultNames[i];
+    lab.appendChild(inp);
+    nameInputs.appendChild(lab);
+  }
+}
+modeEl.addEventListener("change", renderNameInputs);
+renderNameInputs();
+
+function save(){ localStorage.setItem("crownCribV2", JSON.stringify(state)); }
+function load(){
+  try{
+    const raw = localStorage.getItem("crownCribV2");
+    if(raw){ state = JSON.parse(raw); renderAll(); }
+  }catch(e){}
+}
+
+function start(){
+  const count = countForMode(modeEl.value);
+  state.goal = Number(goalEl.value);
+  state.players = [];
+  for(let i=0;i<count;i++){
+    const name = $(`name${i}`).value.trim() || defaultNames[i];
+    state.players.push({name, score:0, color:colorMap[i]});
+  }
+  state.selected = 0; state.dealer = 0; state.currentEvent = null; state.history = [];
+  save(); renderAll();
+}
+$("startBtn").addEventListener("click", start);
+
+function renderEvents(){
+  const grid = $("eventGrid");
+  grid.innerHTML = "";
+  [1,2,3,4,5,6].forEach(n=>{
+    const e = events[n];
+    const btn = document.createElement("button");
+    btn.className = "event" + (state.currentEvent === n ? " selected" : "");
+    btn.innerHTML = `<strong>${n} ${e.name}</strong><span>${e.text}</span>`;
+    btn.onclick = () => { state.currentEvent = n; state.history.push(`Event Die: ${n} ${e.name}`); save(); renderAll(); };
+    grid.appendChild(btn);
+  });
+  const current = $("currentEvent");
+  if(state.currentEvent){
+    const e = events[state.currentEvent];
+    current.innerHTML = `<b>${state.currentEvent} ${e.name}</b><span>${e.text}</span>`;
+  } else {
+    current.innerHTML = `<b>No Event Selected</b><span>Tap the event rolled this round.</span>`;
+  }
+}
+$("clearEventBtn").addEventListener("click",()=>{state.currentEvent=null;save();renderAll();});
+
+function renderScores(){
+  $("gamePanel").classList.toggle("hidden", state.players.length === 0);
+  $("goalView").textContent = state.goal;
+  const box = $("scoreCards");
+  box.innerHTML = "";
+  state.players.forEach((p,i)=>{
+    const card = document.createElement("div");
+    card.className = "score-card" + (state.selected === i ? " selected" : "");
+    card.onclick = ()=>{state.selected=i;save();renderAll();};
+    const pct = Math.min(100, p.score/state.goal*100);
+    card.innerHTML = `
+      <div class="score-top">
+        <span class="house-dot" style="background:${p.color}"></span>
+        <span class="name">${p.name}</span>
+        ${state.dealer===i ? '<span class="dealer">Dealer</span>' : ''}
+      </div>
+      <div class="score">${p.score}</div>
+      <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+      ${p.score >= state.goal ? '<div class="victory">👑 Victory!</div>' : ''}
+    `;
+    box.appendChild(card);
+  });
+}
+
+function add(points, label){
+  if(!state.players.length) return;
+  const p = state.players[state.selected];
+  const old = p.score;
+  p.score = Math.max(0, p.score + points);
+  state.history.push(`${p.name}: ${old} → ${p.score} (${points>=0?"+":""}${points}${label?`, ${label}`:""})`);
+  save(); renderAll();
+}
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(Number(b.dataset.add)));
+
+const helperBase = {
+  "15":2, "31":2, "go":1, "pair":2, "trips":6, "quads":12, "run3":3, "run4":4, "run5":5, "nobs":1, "heels":2
+};
+document.querySelectorAll("[data-helper]").forEach(b=>{
+  b.onclick=()=>{
+    let key=b.dataset.helper, pts=helperBase[key], label=b.textContent.trim();
+    if(state.currentEvent===1 && key==="run3") pts=4;
+    if(state.currentEvent===1 && key==="run4") pts=6;
+    if(state.currentEvent===1 && key==="run5") pts=8;
+    if(state.currentEvent===2 && key==="15") pts=3;
+    if(state.currentEvent===3 && key==="pair") pts=3;
+    if(state.currentEvent===3 && key==="trips") pts=9;
+    if(state.currentEvent===3 && key==="quads") pts=16;
+    add(pts, label);
+  };
+});
+
+$("customBtn").onclick=()=>{
+  const val = Number($("customAmount").value);
+  if(Number.isFinite(val) && val !== 0){ add(val, "custom"); $("customAmount").value=""; }
+};
+$("undoBtn").onclick=()=>{
+  const last = state.history.pop(); if(!last) return;
+  const m = last.match(/^(.*): (\d+) → (\d+) \(([+-]?\d+)/);
+  if(m){
+    const p = state.players.find(x=>x.name===m[1]);
+    if(p) p.score = Number(m[2]);
+  }
+  save(); renderAll();
+};
+$("nextDealerBtn").onclick=()=>{
+  if(!state.players.length) return;
+  state.dealer = (state.dealer + 1) % state.players.length;
+  state.history.push(`Dealer: ${state.players[state.dealer].name}`);
+  save(); renderAll();
+};
+$("resetBtn").onclick=()=>{
+  if(!confirm("Reset scores and history?")) return;
+  state.players.forEach(p=>p.score=0);
+  state.history=[]; state.currentEvent=null; state.dealer=0; state.selected=0;
+  save(); renderAll();
+};
+
+function renderHistory(){
+  const h = $("history");
+  h.innerHTML = "";
+  state.history.slice().reverse().forEach(x=>{
+    const li=document.createElement("li"); li.textContent=x; h.appendChild(li);
+  });
+}
+function renderAll(){ renderScores(); renderEvents(); renderHistory(); }
+load();
+renderEvents();
+
+
+
+</script>
+</body>
+</html>
