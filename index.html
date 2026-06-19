@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b120d"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-title" content="Crown Crib"/>
-  <title>Crown Crib Scorekeeper v3</title>
+  <title>Crown Crib Scorekeeper Official</title>
   <style>
 :root{
   --bg:#070907;
@@ -157,7 +157,7 @@ footer{text-align:center;color:#d9c17b;padding:16px;font-size:13px}
     <div class="seal">♛</div>
     <div>
       <h1>Crown Crib</h1>
-      <p>Companion Scorekeeper • Official Flow v3</p>
+      <p>Companion Scorekeeper • Official Scoring Laws & Royal Decrees</p>
     </div>
   </header>
 
@@ -312,12 +312,12 @@ footer{text-align:center;color:#d9c17b;padding:16px;font-size:13px}
 
   <script>
 const events = {
-  1:{name:"Tempo Surge", text:"Runs upgraded: 3=4 pts, 4=6 pts, 5=8 pts, +2 after 5."},
-  2:{name:"Golden Fifteens", text:"All 15s score 3 points."},
-  3:{name:"Crowned Pairs", text:"Pair=3, 3 of a Kind=9, 4 of a Kind=16, 5 of a Kind=25."},
-  4:{name:"Royal Rotation", text:"After Starter reveal: pass 1 card of your choice left."},
-  5:{name:"Kingdom Tax", text:"After Starter reveal: 2 cards to shared pool, dealer shuffles, give 2 back."},
-  6:{name:"Public Shame", text:"After Starter reveal: player on left reveals 1 card, discard bottom, replace from top."}
+  1:{name:"Tempo Surge", type:"Scoring Law", text:"Runs upgraded: 3=4 pts, 4=6 pts, 5=8 pts, 6=10 pts, 7=12 pts. Applies to pegging, hands, and crib."},
+  2:{name:"Golden Fifteens", type:"Scoring Law", text:"All 15s score 3 points. Applies to pegging, hands, and crib."},
+  3:{name:"Perfect Pairs", type:"Scoring Law", text:"Pair=3, 3 of a Kind=9, 4 of a Kind=16, 5 of a Kind with Kings=25. Applies to pegging, hands, and crib."},
+  4:{name:"Regal Rotation", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: pass 1 card of your choice to the player on your left."},
+  5:{name:"Kingdom Tax", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: place 2 cards into a shared pool. Dealer shuffles those cards and gives 2 back to each player."},
+  6:{name:"Public Shame", type:"Royal Decree — Triggers Crown Cut", text:"After drafting cards: player on your left reveals 1 of your cards, discards it to the bottom of the deck, and you replace it from the top."}
 };
 const colorMap = ["#9f2c2c","#2c5f9f","#2d7a3d","#b78928"];
 const defaultNames = ["Red Crown","Blue Crown","Green Crown","Gold Crown"];
@@ -370,15 +370,15 @@ function renderEvents(){
   [1,2,3,4,5,6].forEach(n=>{
     const e = events[n];
     const btn = document.createElement("button");
-    btn.className = "event" + (state.currentEvent === n ? " selected" : "");
-    btn.innerHTML = `<strong>${n} ${e.name}</strong><span>${e.text}</span>`;
+    btn.className = "event " + (n<=3 ? "scoring-law" : "royal-decree") + (state.currentEvent === n ? " selected" : "");
+    btn.innerHTML = `<strong>${n} ${e.name}</strong><span class="type-label">${e.type}</span><span>${e.text}</span>`;
     btn.onclick = () => { state.currentEvent = n; state.history.push(`Event Die: ${n} ${e.name}`); save(); renderAll(); };
     grid.appendChild(btn);
   });
   const current = $("currentEvent");
   if(state.currentEvent){
     const e = events[state.currentEvent];
-    current.innerHTML = `<b>${state.currentEvent} ${e.name}</b><span>${e.text}</span>`;
+    current.innerHTML = `<b>${state.currentEvent} ${e.name}</b><span class="type-label">${e.type}</span><span>${e.text}</span>`;
   } else {
     current.innerHTML = `<b>No Event Selected</b><span>Tap the event rolled this round.</span>`;
   }
@@ -420,7 +420,7 @@ function add(points, label){
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(Number(b.dataset.add)));
 
 const helperBase = {
-  "15":2, "31":2, "go":1, "pair":2, "trips":6, "quads":12, "run3":3, "run4":4, "run5":5, "nobs":1, "heels":2
+  "15":2, "31":2, "go":1, "pair":2, "trips":6, "quads":12, "run3":3, "run4":4, "run5":5, "run6":6, "run7":7, "fivekind":0, "nobs":1, "heels":2
 };
 document.querySelectorAll("[data-helper]").forEach(b=>{
   b.onclick=()=>{
@@ -428,10 +428,14 @@ document.querySelectorAll("[data-helper]").forEach(b=>{
     if(state.currentEvent===1 && key==="run3") pts=4;
     if(state.currentEvent===1 && key==="run4") pts=6;
     if(state.currentEvent===1 && key==="run5") pts=8;
+    if(state.currentEvent===1 && key==="run6") pts=10;
+    if(state.currentEvent===1 && key==="run7") pts=12;
     if(state.currentEvent===2 && key==="15") pts=3;
     if(state.currentEvent===3 && key==="pair") pts=3;
     if(state.currentEvent===3 && key==="trips") pts=9;
     if(state.currentEvent===3 && key==="quads") pts=16;
+    if(state.currentEvent===3 && key==="fivekind") pts=25;
+    if(key==="fivekind" && state.currentEvent!==3){ alert("5 of a Kind with Kings scores 25 only during Perfect Pairs."); return; }
     add(pts, label);
   };
 });
